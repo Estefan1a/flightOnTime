@@ -10,4 +10,5 @@ public class FlightOnTimeApplication {
 		SpringApplication.run(FlightOnTimeApplication.class, args);
 	}
 
+
 }
