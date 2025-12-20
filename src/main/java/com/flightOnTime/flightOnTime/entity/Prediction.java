@@ -2,10 +2,7 @@ package com.flightOnTime.flightOnTime.entity;
 
 import com.flightOnTime.flightOnTime.enums.PredictionStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +11,8 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "predictios")
+@Table(name = "predictions")
+@Builder
 public class Prediction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
