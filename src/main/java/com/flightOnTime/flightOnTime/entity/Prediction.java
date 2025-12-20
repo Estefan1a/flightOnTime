@@ -23,5 +23,8 @@ public class Prediction {
     private PredictionStatus prevision;
     private Double probabilidad;
     private LocalDateTime fechaPrediccion;
+    @OneToOne(optional = false)
+    @JoinColumn(name = "flight_request_id")
+    private FlightRequest flightRequest;
 
 }
