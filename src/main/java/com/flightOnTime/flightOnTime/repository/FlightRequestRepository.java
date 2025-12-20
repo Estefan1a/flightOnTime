@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface FlightRequestRespository extends JpaRepository<FlightRequest, Long> {
+public interface FlightRequestRepository extends JpaRepository<FlightRequest, Long> {
 }
