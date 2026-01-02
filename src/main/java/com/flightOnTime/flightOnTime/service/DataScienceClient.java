@@ -1,4 +1,4 @@
 package com.flightOnTime.flightOnTime.service;
 
-public interface PredictionService {
+public class DataScienceClient {
 }
