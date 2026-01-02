@@ -17,6 +17,7 @@ public class PredictionController {
 
     private final PredictionService predictionService;
 
+
     public PredictionController(PredictionService predictionService) {
         this.predictionService = predictionService;
     }
