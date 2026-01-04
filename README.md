@@ -56,7 +56,24 @@ Crear un **MVP (Producto Mínimo Viable)** que:
 - Python  
 - Pandas  
 - scikit-learn  
-- Jupyter Notebook  
+- Jupyter Notebook
+
+## 📦 Dependencias y versiones
+
+### Backend
+- Java 17
+- Spring Boot 4.0.1
+- Maven 
+- Jakarta Validation
+- Lombok
+
+### Data Science
+- Python 
+- pandas
+- scikit-learn
+- joblib
+- FastAPI / Flask (para exponer el modelo)
+
 
 ---
 
@@ -67,6 +84,7 @@ flightOnTime/
 │
 ├── backend/
 ├── datascience/
+├── frontend/
 └── README.md
 ```
 
@@ -113,9 +131,9 @@ Tipos:
 - configuracion  
 
 Ejemplo:
-
+```
 funcionalidad: agregar endpoint POST /predict
-
+```
 
 
 
@@ -126,7 +144,7 @@ A continuación se describen los pasos para ejecutar el proyecto de manera local
 ## 🔹 Clonar el repositorio
 
 ```bash
-git clone https://github.com/TU-USUARIO/flightOnTime.git
+git clone https://github.com/Estefan1a/flightOnTime.git
 cd flightOnTime
 ```
 
@@ -154,18 +172,14 @@ mvn spring-boot:run
 http://localhost:8080
 ```
 
-## 🧩 SECCIÓN 2: Cómo probar la API
 
-Pégala **justo después del endpoint que ya tienes** (POST /predict):
+##📤 Ejemplos de petición y respuesta
+
+### 🧪 Endpoint principal
 
 
-## 🧪 Cómo probar la API
-
-Una vez que el backend esté en ejecución, puedes probar el endpoint usando **Postman** o **Insomnia**.
-
-### 🔹 Endpoint disponible
 ```
-POST http://localhost:8080/predict
+POST /predict
 ```
 
 ### 🔹 Headers
@@ -175,6 +189,7 @@ Content-Type: application/json
 
 ### 🔹 Ejemplo de petición
 
+```
 json
 {
   "aerolinea": "AZ",
@@ -183,23 +198,39 @@ json
   "fecha_partida": "2025-11-10T14:30:00",
   "distancia_km": 350
 }
+```
 
 🔹 Ejemplo de respuesta
+```
 {
   "prevision": "Retrasado",
   "probabilidad": 0.78
 }
+```
 
 ## 🤝 Integración con Data Science
 
 El backend está diseñado para integrarse con un modelo predictivo desarrollado por el equipo de Data Science.
 
+### 🔹 Estrategia de integración
+
 - El modelo será entrenado en Python
 - Exportado en formato `.joblib`
-- La lógica actual del backend utiliza una predicción simulada
-- Esta lógica será reemplazada por la integración con el modelo real
+- El modelo se expone mediante un microservicio REST (FastAPI o Flask).
+- El Backend consume dicho servicio a través de una llamada HTTP.
 
-Esto permite desarrollar el backend y el modelo de forma paralela.
+Mientras el modelo real está en desarrollo, el backend utiliza una predicción simulada (fake) para pruebas y validaciones.
+
+Cuando el modelo real esté disponible, solo será necesario actualizar el cliente de integración.
+
+## ⚙️ Configuración del servicio de Data Science
+
+La URL del microservicio del modelo se define mediante variable de entorno:
+
+```
+DATASCIENCE_API_URL=http://localhost:8000/predict
+
+```
 
 ## 📌 Estado del proyecto
 
