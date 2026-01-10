@@ -32,15 +32,14 @@ Crear un **MVP (Producto Mínimo Viable)** que:
 - Estefanía González  
 - Alejandro Montoya Torres  
 - Javier Alberto Chávez Córdova  
-- Juan Gómez Martínez  
-- Reinaldo Blanco  
+- Juan Gómez Martínez
+- Gabriel Romero
 
 ### Data Science
-- Felipe Rojas (Data Engineer)  
-- Luis Cavero (Data Engineer)  
-- Cristian Saenz (Data Scientist)  
-- Juan Martínez (Data Scientist)  
-- Felipe Guzmán de la Fuente (Data Scientist)  
+- Felipe Rojas  *
+- Luis Cavero  
+- Cristian Saenz  
+- Juan Martínez   
 
 ---
 
@@ -62,9 +61,8 @@ Crear un **MVP (Producto Mínimo Viable)** que:
 
 ### Backend
 - Java 17
-- Spring Boot 4.0.1
-- Maven 
-- Jakarta Validation
+- Spring Boot 3.4.1
+- Maven 4.0
 - Lombok
 
 ### Data Science
@@ -228,7 +226,9 @@ Cuando el modelo real esté disponible, solo será necesario actualizar el clien
 La URL del microservicio del modelo se define mediante variable de entorno:
 
 ```
-DATASCIENCE_API_URL=http://localhost:8000/predict
+http://localhost:8080/swagger-ui/index.html
+
+
 
 ```
 
