@@ -1,9 +1,6 @@
 package com.flightOnTime.flightOnTime.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +17,7 @@ public record FlightRequestDTO(
         String destino,
 
         @NotNull(message = "La fecha de partida es obligatoria")
+        @Future(message = "La fecha de salida debe ser posterior a la fecha actual")
         LocalDateTime fechaPartida,
 
         @NotNull(message = "La distancia del vuelo es obligatoria")
