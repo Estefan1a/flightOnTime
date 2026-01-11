@@ -13,7 +13,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-
+/**
+ * Servicio principal de predicción de vuelos.
+ *
+ * Orquesta el flujo completo de una predicción:
+ * <ul>
+ *     <li>Persiste la solicitud de vuelo recibida</li>
+ *     <li>Consulta al oráculo de predicción (servicio externo o mock)</li>
+ *     <li>Guarda el resultado de la predicción</li>
+ *     <li>Devuelve la respuesta al cliente</li>
+ * </ul>
+ *
+ * Este servicio actúa como punto central de integración
+ * entre el backend y el motor de predicción.
+ */
 @Service
 @RequiredArgsConstructor
 public class PredictionService {
@@ -23,15 +36,39 @@ public class PredictionService {
     private final FlightMapper flightMapper;
     private final OraclePredictionClient oracleClient;
 
+    /**
+     * Ejecuta una predicción de vuelo a partir de los datos proporcionados.
+     *
+     * El flujo es el siguiente:
+     * <ol>
+     *     <li>Convierte el DTO en entidad y lo persiste</li>
+     *     <li>Envía la solicitud al oráculo de predicción</li>
+     *     <li>Persiste el resultado de la predicción</li>
+     *     <li>Devuelve la respuesta del oráculo</li>
+     * </ol>
+     *
+     * @param request datos del vuelo a evaluar
+     * @return resultado de la predicción con estado y probabilidad
+     *
+     @throws OraclePredictionException propagada desde el cliente del oráculo
+     */
     public PredictionResponseDTO predict(FlightRequestDTO request) {
 
-        FlightRequest flight = flightRepo.save(flightMapper.toEntity(request));
+        FlightRequest flight = flightRepo.save(
+                flightMapper.toEntity(request)
+        );
 
-        PredictionResponseDTO oracleResponse = oracleClient.predict(request);
+        PredictionResponseDTO oracleResponse =
+                oracleClient.predict(request);
 
-        predictionRepo.save(Prediction.builder()
+        predictionRepo.save(
+                Prediction.builder()
                         .flightRequest(flight)
-                        .prevision(PredictionStatus.valueOf(oracleResponse.prevision().toUpperCase()))
+                        .prevision(
+                                PredictionStatus.valueOf(
+                                        oracleResponse.prevision().toUpperCase()
+                                )
+                        )
                         .probabilidad(oracleResponse.probabilidad())
                         .fechaPrediccion(LocalDateTime.now())
                         .build()
