@@ -22,8 +22,6 @@ public class PredictionStatsService {
         long retrasados = predictionRepository
                 .countByPrevision(PredictionStatus.RETRASADO);
 
-        long cancelados = predictionRepository
-                .countByPrevision(PredictionStatus.CANCELADO);
 
         double porcentajeRetrasados = total == 0 ? 0.0 : (retrasados * 100.0) / total;
 
@@ -31,7 +29,6 @@ public class PredictionStatsService {
                 total,
                 puntuales,
                 retrasados,
-                cancelados,
                 porcentajeRetrasados
         );
     }
