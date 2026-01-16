@@ -1,15 +1,20 @@
 package com.flightOnTime.flightOnTime.controller;
 
 import com.flightOnTime.flightOnTime.dto.FlightRequestDTO;
+import com.flightOnTime.flightOnTime.dto.PredictionHistoryDTO;
 import com.flightOnTime.flightOnTime.dto.PredictionResponseDTO;
+import com.flightOnTime.flightOnTime.entity.Prediction;
 import com.flightOnTime.flightOnTime.service.PredictionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Controlador REST encargado de exponer el endpoint de predicción de vuelos.
@@ -26,6 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/predict")
+@CrossOrigin("http://127.0.0.1:5500")
+
 @RequiredArgsConstructor
 public class PredictionController {
 
@@ -51,6 +58,16 @@ public class PredictionController {
     ) {
         return ResponseEntity.ok(
                 predictionService.predict(flightRequestDTO)
+        );
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<List<PredictionHistoryDTO>> getHistory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(
+                predictionService.getHistory(page, size)
         );
     }
 }

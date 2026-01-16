@@ -2,6 +2,7 @@ package com.flightOnTime.flightOnTime.service;
 
 import com.flightOnTime.flightOnTime.client.OraclePredictionClient;
 import com.flightOnTime.flightOnTime.dto.FlightRequestDTO;
+import com.flightOnTime.flightOnTime.dto.PredictionHistoryDTO;
 import com.flightOnTime.flightOnTime.dto.PredictionResponseDTO;
 import com.flightOnTime.flightOnTime.entity.FlightRequest;
 import com.flightOnTime.flightOnTime.entity.Prediction;
@@ -10,9 +11,16 @@ import com.flightOnTime.flightOnTime.mapper.FlightMapper;
 import com.flightOnTime.flightOnTime.repository.FlightRequestRepository;
 import com.flightOnTime.flightOnTime.repository.PredictionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * Servicio principal de predicción de vuelos.
  *
@@ -75,5 +83,38 @@ public class PredictionService {
         );
 
         return oracleResponse;
+    }
+
+    /**
+     * Obtiene el historial de predicciones paginado y ordenado
+     * por fecha de predicción descendente.
+     *
+     * @param page número de página (base 0)
+     * @param size tamaño de página
+     * @return lista de predicciones históricas
+     */
+    public List<PredictionHistoryDTO> getHistory(int page, int size) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("fechaPrediccion").descending()
+        );
+
+        Page<Prediction> predictions =
+                predictionRepo.findAll(pageable);
+
+        return predictions.getContent().stream()
+                .map(p -> new PredictionHistoryDTO(
+                        p.getId(),
+                        p.getFlightRequest().getAerolinea(),
+                        p.getFlightRequest().getOrigen(),
+                        p.getFlightRequest().getDestino(),
+                        p.getFlightRequest().getFechaPartida(),
+                        p.getPrevision().name(),
+                        p.getProbabilidad(),
+                        p.getFechaPrediccion()
+                ))
+                .toList();
     }
 }
