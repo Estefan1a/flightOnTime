@@ -4,6 +4,7 @@ import com.flightOnTime.flightOnTime.client.OraclePredictionClient;
 import com.flightOnTime.flightOnTime.dto.FlightRequestDTO;
 import com.flightOnTime.flightOnTime.dto.PredictionHistoryDTO;
 import com.flightOnTime.flightOnTime.dto.PredictionResponseDTO;
+import com.flightOnTime.flightOnTime.dto.WeatherInfo;
 import com.flightOnTime.flightOnTime.entity.FlightRequest;
 import com.flightOnTime.flightOnTime.entity.Prediction;
 import com.flightOnTime.flightOnTime.enums.PredictionStatus;
@@ -16,7 +17,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,48 +24,74 @@ import java.util.List;
 /**
  * Servicio principal de predicción de vuelos.
  *
+ * <p>
  * Orquesta el flujo completo de una predicción:
+ * </p>
  * <ul>
  *     <li>Persiste la solicitud de vuelo recibida</li>
+ *     <li>Consulta el clima en el aeropuerto de destino para la fecha del vuelo</li>
  *     <li>Consulta al oráculo de predicción (servicio externo o mock)</li>
  *     <li>Guarda el resultado de la predicción</li>
- *     <li>Devuelve la respuesta al cliente</li>
+ *     <li>Devuelve la respuesta al cliente enriquecida con información climática</li>
  * </ul>
  *
- * Este servicio actúa como punto central de integración
- * entre el backend y el motor de predicción.
+ * <p>
+ * Este servicio actúa como punto central de integración entre:
+ * </p>
+ * <ul>
+ *     <li>Persistencia de solicitudes y predicciones</li>
+ *     <li>Motor de predicción (oráculo)</li>
+ *     <li>Servicio externo de clima</li>
+ * </ul>
  */
 @Service
 @RequiredArgsConstructor
 public class PredictionService {
 
+    /** Repositorio de solicitudes de vuelo */
     private final FlightRequestRepository flightRepo;
+
+    /** Repositorio de predicciones */
     private final PredictionRepository predictionRepo;
+
+    /** Mapper DTO ↔ entidad para solicitudes de vuelo */
     private final FlightMapper flightMapper;
+
+    /** Cliente del servicio de predicción (oráculo real o mock) */
     private final OraclePredictionClient oracleClient;
 
+    /** Servicio de consulta climática */
+    private final WeatherService weatherService;
     /**
      * Ejecuta una predicción de vuelo a partir de los datos proporcionados.
      *
-     * El flujo es el siguiente:
+     * <p>
+     * El flujo de ejecución es el siguiente:
+     * </p>
      * <ol>
-     *     <li>Convierte el DTO en entidad y lo persiste</li>
-     *     <li>Envía la solicitud al oráculo de predicción</li>
+     *     <li>Convierte el {@link FlightRequestDTO} en entidad y lo persiste</li>
+     *     <li>Obtiene la información climática del aeropuerto de destino
+     *         para la fecha de partida</li>
+     *     <li>Consulta al oráculo de predicción</li>
      *     <li>Persiste el resultado de la predicción</li>
-     *     <li>Devuelve la respuesta del oráculo</li>
+     *     <li>Devuelve la respuesta combinando predicción y clima</li>
      * </ol>
      *
      * @param request datos del vuelo a evaluar
-     * @return resultado de la predicción con estado y probabilidad
+     * @return respuesta de predicción con estado, probabilidad y clima asociado
      *
-     @throws OraclePredictionException propagada desde el cliente del oráculo
+     * @throws OraclePredictionException
+     *         si el oráculo de predicción no responde o devuelve un error
+     * @throws IllegalArgumentException
+     *         si el aeropuerto de destino no tiene coordenadas soportadas
      */
     public PredictionResponseDTO predict(FlightRequestDTO request) {
 
         FlightRequest flight = flightRepo.save(
                 flightMapper.toEntity(request)
         );
-
+        WeatherInfo weather =
+                weatherService.getWeatherForAirportAndDate(request.destino(), request.fechaPartida());
         PredictionResponseDTO oracleResponse =
                 oracleClient.predict(request);
 
@@ -82,7 +108,11 @@ public class PredictionService {
                         .build()
         );
 
-        return oracleResponse;
+        return new PredictionResponseDTO(
+                oracleResponse.prevision(),
+                oracleResponse.probabilidad(),
+                weather
+        );
     }
 
     /**

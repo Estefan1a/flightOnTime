@@ -91,7 +91,8 @@ public class OraclePredictionClient {
     public PredictionResponseDTO predict(FlightRequestDTO request) {
         return new PredictionResponseDTO(
                 "RETRASADO",
-                0.85
+                0.85,
+                null
         );
     }
 }
