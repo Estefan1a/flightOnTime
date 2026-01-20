@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Delay Predictor - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-title">
+                    <svg class="plane-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>
+                    </svg>
+                    <div>
+                        <h1>Flight Delay Predictor</h1>
+                        <p class="subtitle">Sistema inteligente de predicción de retrasos de vuelos</p>
+                    </div>
+                </div>
+                <nav class="nav-tabs">
+                    <button class="nav-tab active" data-tab="dashboard">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Dashboard
+                    </button>
+                    <button class="nav-tab" data-tab="predict">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                        Predecir
+                    </button>
+                    <button class="nav-tab" data-tab="history">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Historial
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div id="dashboard-content" class="content active">
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Predicciones</div>
+                    <div class="stat-value" id="total-predictions">0</div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-label">Vuelos Puntuales</div>
+                    <div class="stat-value" id="total-ontime">0</div>
+                </div>
+                <div class="stat-card orange">
+                    <div class="stat-label">Vuelos Retrasados</div>
+                    <div class="stat-value" id="total-delayed">0</div>
+                </div>
+            </div>
+
+            <!-- Airport Stats Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Top 5 Aeropuertos con Más Retrasos</h2>
+                </div>
+                <div class="airport-list" id="airport-list">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Cargando estadísticas...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Predict Content -->
+        <div id="predict-content" class="content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Nueva Predicción de Vuelo</h2>
+                </div>
+
+                <form id="predict-form" novalidate>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="aerolinea">Aerolínea *</label>
+                            <input type="text" id="aerolinea" name="aerolinea" placeholder="ej: American Airlines">
+                            <span class="error-msg" id="error-aerolinea"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="origen">Aeropuerto Origen (IATA) *</label>
+                            <input type="text" id="origen" name="origen" placeholder="ej: JFK" maxlength="3" style="text-transform: uppercase;">
+                            <span class="error-msg" id="error-origen"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="destino">Aeropuerto Destino (IATA) *</label>
+                            <input type="text" id="destino" name="destino" placeholder="ej: LAX" maxlength="3" style="text-transform: uppercase;">
+                            <span class="error-msg" id="error-destino"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fechaPartida">Fecha y Hora de Partida *</label>
+                            <input type="datetime-local" id="fechaPartida" name="fechaPartida">
+                            <span class="error-msg" id="error-fechaPartida"></span>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="distanciaKm">Distancia del Vuelo (km) *</label>
+                            <input type="number" id="distanciaKm" name="distanciaKm" placeholder="ej: 3500" min="1">
+                            <span class="error-msg" id="error-distanciaKm"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="submit-btn" style="margin-top: 1.5rem;">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                        <span id="btn-text">Realizar Predicción</span>
+                    </button>
+                </form>
+
+                <!-- Prediction Result -->
+                <div id="prediction-result" class="prediction-result">
+                    <div class="prediction-header">
+                        <svg class="prediction-icon" id="prediction-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"></svg>
+                        <div class="prediction-status" id="prediction-status"></div>
+                    </div>
+                    
+                    <p class="prediction-description" id="prediction-description"></p>
+                    
+                    <!-- Weather Info -->
+                    <div class="weather-info" id="weather-info">
+                        <h3 class="weather-title">Condiciones Climáticas en Destino</h3>
+                        <div class="weather-grid">
+                            <div class="weather-card">
+                                <svg class="weather-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path>
+                                </svg>
+                                <div class="weather-label">Temperatura</div>
+                                <div class="weather-value" id="weather-temp">--°C</div>
+                            </div>
+                            <div class="weather-card">
+                                <svg class="weather-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path>
+                                </svg>
+                                <div class="weather-label">Viento</div>
+                                <div class="weather-value" id="weather-wind">-- km/h</div>
+                            </div>
+                        </div>
+                        <p class="weather-description" id="weather-description"></p>
+                    </div>
+                    
+                    <div class="prediction-probability" id="prediction-probability"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Content -->
+        <div id="history-content" class="content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Historial de Predicciones</h2>
+                    <button class="btn-refresh" id="refresh-history" title="Actualizar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="history-list">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Cargando historial...</p>
+                    </div>
+                </div>
+
+                <div class="pagination" id="pagination" style="display: none;">
+                    <button class="btn-pagination" id="prev-page" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                        Anterior
+                    </button>
+                    <span class="page-info" id="page-info">Página 1</span>
+                    <button class="btn-pagination" id="next-page">
+                        Siguiente
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
