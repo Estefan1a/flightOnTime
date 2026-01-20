@@ -1,23 +1,9 @@
 package com.flightOnTime.flightOnTime.dto;
-
 import jakarta.validation.constraints.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
-/**
- * DTO que representa la solicitud de predicción para un vuelo.
- *
- * Contiene la información mínima necesaria para que el sistema
- * determine la probabilidad de retraso o cancelación de un vuelo.
- *
- * Usado en:
- * - POST /predict
- *
- * Validaciones:
- * - Campos obligatorios
- * - Códigos IATA limitados a 3 caracteres
- * - Fecha de partida futura
- * - Distancia positiva
- */
+
 public record FlightRequestDTO(
 
         /** Nombre o código de la aerolínea */

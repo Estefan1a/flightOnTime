@@ -12,34 +12,6 @@ import java.util.List;
 public interface AirportStatsRepository
         extends JpaRepository<Prediction, Long> {
 
-    /**
-     * Obtiene un ranking de aeropuertos de origen basado en la cantidad de vuelos
-     * con predicción de retraso.
-     *
-     * <p>
-     * Para cada aeropuerto se calculan las siguientes métricas:
-     * </p>
-     * <ul>
-     *     <li>Total de predicciones realizadas</li>
-     *     <li>Total de vuelos con predicción {@code RETRASADO}</li>
-     *     <li>Porcentaje de vuelos retrasados sobre el total del aeropuerto</li>
-     * </ul>
-     *
-     * <p>
-     * El ranking se ordena de forma descendente según la cantidad total
-     * de vuelos retrasados, mostrando primero los aeropuertos con mayor
-     * impacto operativo.
-     * </p>
-     *
-     * <p>
-     * Este método utiliza una proyección DTO ({@link AirportStatsDTO})
-     * para evitar la carga de entidades completas y mejorar el rendimiento.
-     * </p>
-     *
-     * @param pageable permite limitar la cantidad de resultados
-     *                 (por ejemplo: top 5 aeropuertos)
-     * @return lista ordenada de estadísticas por aeropuerto
-     */
     @Query("""
     SELECT new com.flightOnTime.flightOnTime.dto.AirportStatsDTO(
         f.origen,
@@ -52,6 +24,7 @@ public interface AirportStatsRepository
     GROUP BY f.origen
     ORDER BY SUM(CASE WHEN p.prevision = RETRASADO THEN 1 ELSE 0 END) DESC
     """)
+
     List<AirportStatsDTO> getTopProblematicAirports(Pageable pageable);
 }
 

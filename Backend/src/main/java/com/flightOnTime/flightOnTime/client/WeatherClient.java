@@ -8,39 +8,19 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDate;
 import java.util.Map;
-/**
- * Cliente encargado de consultar el pronóstico climático para una ubicación
- * geográfica y una fecha determinada.
- *
- * <p>
- * Construye una solicitud HTTP hacia un proveedor externo de clima utilizando
- * coordenadas (latitud y longitud) y una fecha específica, devolviendo la
- * respuesta cruda del servicio.
- * </p>
- */
+
 @Component
 @RequiredArgsConstructor
 public class WeatherClient {
 
-    /**
-     * Cliente REST utilizado para realizar la llamada HTTP.
-     */
+
+     // Cliente REST utilizado para realizar la llamada HTTP.
     private final RestTemplate restTemplate;
 
-    /**
-     * URL base del servicio de clima.
-     */
+    //URL base del servicio de clima.
     @Value("${weather.api.url}")
     private String apiUrl;
 
-    /**
-     * Obtiene el pronóstico climático diario para una ubicación y fecha dadas.
-     *
-     * @param lat  latitud del aeropuerto
-     * @param lon  longitud del aeropuerto
-     * @param date fecha para la cual se solicita el pronóstico
-     * @return mapa con la respuesta del servicio de clima
-     */
     public Map<String, Object> getForecast(
             double lat,
             double lon,

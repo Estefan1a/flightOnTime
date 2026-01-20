@@ -84,7 +84,14 @@ public class AirportCoordinates {
             Map.entry("MEX", new double[]{19.4361, -99.0719}),
             Map.entry("LIM", new double[]{-12.0219, -77.1143}),
             Map.entry("BOG", new double[]{4.7016, -74.1469}),
-            Map.entry("JNB", new double[]{-26.1337, 28.2420})
+            Map.entry("JNB", new double[]{-26.1337, 28.2420}),
+            Map.entry("BOS", new double[]{42.3656, -71.0096}),  // Boston Logan International
+            Map.entry("SFO", new double[]{37.6213, -122.3790}), // San Francisco International
+            Map.entry("MDW", new double[]{41.7858, -87.7522}),  // Chicago Midway
+            Map.entry("MIA", new double[]{25.7959, -80.2870}),  // Miami International
+            Map.entry("EWR", new double[]{40.6895, -74.1745}),  // Newark Liberty
+            Map.entry("OAK", new double[]{37.7126, -122.2197}), // Oakland
+            Map.entry("LAS", new double[]{36.0840, -115.1537})  // Las Vegas McCarran
     );
 
     /**

@@ -18,121 +18,83 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-/**
- * Servicio principal de predicción de vuelos.
- *
- * <p>
- * Orquesta el flujo completo de una predicción:
- * </p>
- * <ul>
- *     <li>Persiste la solicitud de vuelo recibida</li>
- *     <li>Consulta el clima en el aeropuerto de destino para la fecha del vuelo</li>
- *     <li>Consulta al oráculo de predicción (servicio externo o mock)</li>
- *     <li>Guarda el resultado de la predicción</li>
- *     <li>Devuelve la respuesta al cliente enriquecida con información climática</li>
- * </ul>
- *
- * <p>
- * Este servicio actúa como punto central de integración entre:
- * </p>
- * <ul>
- *     <li>Persistencia de solicitudes y predicciones</li>
- *     <li>Motor de predicción (oráculo)</li>
- *     <li>Servicio externo de clima</li>
- * </ul>
- */
 @Service
 @RequiredArgsConstructor
 public class PredictionService {
 
-    /** Repositorio de solicitudes de vuelo */
     private final FlightRequestRepository flightRepo;
-
-    /** Repositorio de predicciones */
     private final PredictionRepository predictionRepo;
-
-    /** Mapper DTO ↔ entidad para solicitudes de vuelo */
     private final FlightMapper flightMapper;
-
-    /** Cliente del servicio de predicción (oráculo real o mock) */
     private final OraclePredictionClient oracleClient;
-
-    /** Servicio de consulta climática */
     private final WeatherService weatherService;
-    /**
-     * Ejecuta una predicción de vuelo a partir de los datos proporcionados.
-     *
-     * <p>
-     * El flujo de ejecución es el siguiente:
-     * </p>
-     * <ol>
-     *     <li>Convierte el {@link FlightRequestDTO} en entidad y lo persiste</li>
-     *     <li>Obtiene la información climática del aeropuerto de destino
-     *         para la fecha de partida</li>
-     *     <li>Consulta al oráculo de predicción</li>
-     *     <li>Persiste el resultado de la predicción</li>
-     *     <li>Devuelve la respuesta combinando predicción y clima</li>
-     * </ol>
-     *
-     * @param request datos del vuelo a evaluar
-     * @return respuesta de predicción con estado, probabilidad y clima asociado
-     *
-     * @throws OraclePredictionException
-     *         si el oráculo de predicción no responde o devuelve un error
-     * @throws IllegalArgumentException
-     *         si el aeropuerto de destino no tiene coordenadas soportadas
-     */
+
+    // ------------------------------
+    // Predicción de un vuelo
+    // ------------------------------
     public PredictionResponseDTO predict(FlightRequestDTO request) {
 
-        FlightRequest flight = flightRepo.save(
-                flightMapper.toEntity(request)
+        // 1️⃣ Persistimos el vuelo
+        FlightRequest flight = flightRepo.save(flightMapper.toEntity(request));
+
+        // 2️⃣ Obtenemos info de clima usando solo la fecha (sin hora)
+        LocalDate fecha = request.fechaPartida().toLocalDate();
+        WeatherInfo weather = weatherService.getWeatherForAirportAndDate(
+                request.destino(),
+                fecha
         );
-        WeatherInfo weather =
-                weatherService.getWeatherForAirportAndDate(request.destino(), request.fechaPartida());
-        PredictionResponseDTO oracleResponse =
-                oracleClient.predict(request);
+
+        // 3️⃣ Consultamos el oráculo Flask
+        Map<String, Object> oracleResult = oracleClient.predict(request);
+
+        // 4️⃣ Guardamos predicción
+        String estado = (String) oracleResult.get("prevision");
+        Double probabilidad = ((Number) oracleResult.get("probabilidad")).doubleValue();
+
+        // Mapear respuesta del microservicio a tu enum
+        PredictionStatus statusEnum;
+        switch (estado.toUpperCase()) {
+            case "A TIEMPO":
+            case "PUNTUAL":
+                statusEnum = PredictionStatus.PUNTUAL;
+                break;
+            case "RETRASADO":
+                statusEnum = PredictionStatus.RETRASADO;
+                break;
+            default:
+                throw new RuntimeException("Valor desconocido de predicción: " + estado);
+        }
 
         predictionRepo.save(
                 Prediction.builder()
                         .flightRequest(flight)
-                        .prevision(
-                                PredictionStatus.valueOf(
-                                        oracleResponse.prevision().toUpperCase()
-                                )
-                        )
-                        .probabilidad(oracleResponse.probabilidad())
+                        .prevision(statusEnum)
+                        .probabilidad(probabilidad)
                         .fechaPrediccion(LocalDateTime.now())
                         .build()
         );
 
+        // 5️⃣ Devolvemos respuesta
         return new PredictionResponseDTO(
-                oracleResponse.prevision(),
-                oracleResponse.probabilidad(),
+                estado,
+                probabilidad,
                 weather
         );
     }
 
-    /**
-     * Obtiene el historial de predicciones paginado y ordenado
-     * por fecha de predicción descendente.
-     *
-     * @param page número de página (base 0)
-     * @param size tamaño de página
-     * @return lista de predicciones históricas
-     */
+    // ------------------------------
+    // Historial de predicciones
+    // ------------------------------
     public List<PredictionHistoryDTO> getHistory(int page, int size) {
 
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by("fechaPrediccion").descending()
-        );
+        Pageable pageable = PageRequest.of(page, size, Sort.by("fechaPrediccion").descending());
 
-        Page<Prediction> predictions =
-                predictionRepo.findAll(pageable);
+        Page<Prediction> predictions = predictionRepo.findAll(pageable);
 
         return predictions.getContent().stream()
                 .map(p -> new PredictionHistoryDTO(
