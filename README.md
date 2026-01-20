@@ -273,7 +273,6 @@ flightOnTime/Backend Java (Spring Boot)
     Desarrollo y visualización del consumo de la API.
 
 - **microservice**  
-    
 
 ---
 
@@ -282,6 +281,8 @@ flightOnTime/Backend Java (Spring Boot)
 - Ejecutar el backend Spring Boot desde IntelliJ
 - Activar entorno virtual y ejecutar api.py
 - Probar endpoints con Insomnia o Postman
+
+👉 [Cómo ejecutar el proyecto](backend/docs/mysql-database-setup.md)
 
 
 
