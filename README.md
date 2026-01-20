@@ -72,6 +72,11 @@ Crear un **MVP (Producto Mínimo Viable)** que:
 - joblib
 - FastAPI / Flask (para exponer el modelo)
 
+### Frontend
+- React
+- TypeScript
+- Tailwind CSS
+- Vite
 
 ---
 
@@ -145,6 +150,9 @@ A continuación se describen los pasos para ejecutar el proyecto de manera local
 git clone https://github.com/Estefan1a/flightOnTime.git
 cd flightOnTime
 ```
+## Ejecutar el Frontend
+  Run `npm i` to install the dependencies.
+  Run `npm run dev` to start the development server.
 
 ## Ejecutar el Backend
 
