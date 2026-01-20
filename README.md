@@ -32,15 +32,14 @@ Crear un **MVP (Producto Mínimo Viable)** que:
 - Estefanía González  
 - Alejandro Montoya Torres  
 - Javier Alberto Chávez Córdova  
-- Juan Gómez Martínez  
-- Reinaldo Blanco  
+- Juan Gómez Martínez
+- Gabriel Romero
 
 ### Data Science
-- Felipe Rojas (Data Engineer)  
-- Luis Cavero (Data Engineer)  
-- Cristian Saenz (Data Scientist)  
-- Juan Martínez (Data Scientist)  
-- Felipe Guzmán de la Fuente (Data Scientist)  
+- Felipe Rojas  *
+- Luis Cavero  
+- Cristian Saenz  
+- Juan Martínez   
 
 ---
 
@@ -56,7 +55,28 @@ Crear un **MVP (Producto Mínimo Viable)** que:
 - Python  
 - Pandas  
 - scikit-learn  
-- Jupyter Notebook  
+- Jupyter Notebook
+
+## 📦 Dependencias y versiones
+
+### Backend
+- Java 17
+- Spring Boot 3.4.1
+- Maven 4.0
+- Lombok
+
+### Data Science
+- Python 
+- pandas
+- scikit-learn
+- joblib
+- FastAPI / Flask (para exponer el modelo)
+
+### Frontend
+- React
+- TypeScript
+- Tailwind CSS
+- Vite
 
 ---
 
@@ -67,6 +87,7 @@ flightOnTime/
 │
 ├── backend/
 ├── datascience/
+├── frontend/
 └── README.md
 ```
 
@@ -113,18 +134,69 @@ Tipos:
 - configuracion  
 
 Ejemplo:
-
+```
 funcionalidad: agregar endpoint POST /predict
+```
 
 
----
 
-## 📡 Endpoint principal
+## ▶️ Cómo ejecutar el proyecto (uso local)
 
-### POST /predict
+A continuación se describen los pasos para ejecutar el proyecto de manera local.
 
-**Entrada**
-```json
+## 🔹 Clonar el repositorio
+
+```bash
+git clone https://github.com/Estefan1a/flightOnTime.git
+cd flightOnTime
+```
+## Ejecutar el Frontend
+  Run `npm i` to install the dependencies.
+  Run `npm run dev` to start the development server.
+
+## Ejecutar el Backend
+
+
+Cambiar a la rama backend:
+```
+git checkout backend
+```
+
+Entrar a la carpeta del backend:
+```
+cd backend
+```
+
+## Ejecutar la aplicación:
+
+```
+mvn spring-boot:run
+```
+
+## La API se levantará en:
+```
+http://localhost:8080
+```
+
+
+##📤 Ejemplos de petición y respuesta
+
+### 🧪 Endpoint principal
+
+
+```
+POST /predict
+```
+
+### 🔹 Headers
+```
+Content-Type: application/json
+```
+
+### 🔹 Ejemplo de petición
+
+```
+json
 {
   "aerolinea": "AZ",
   "origen": "GIG",
@@ -133,12 +205,39 @@ funcionalidad: agregar endpoint POST /predict
   "distancia_km": 350
 }
 ```
-**Salida**
-```json
+
+🔹 Ejemplo de respuesta
+```
 {
   "prevision": "Retrasado",
   "probabilidad": 0.78
 }
+```
+
+## 🤝 Integración con Data Science
+
+El backend está diseñado para integrarse con un modelo predictivo desarrollado por el equipo de Data Science.
+
+### 🔹 Estrategia de integración
+
+- El modelo será entrenado en Python
+- Exportado en formato `.joblib`
+- El modelo se expone mediante un microservicio REST (FastAPI o Flask).
+- El Backend consume dicho servicio a través de una llamada HTTP.
+
+Mientras el modelo real está en desarrollo, el backend utiliza una predicción simulada (fake) para pruebas y validaciones.
+
+Cuando el modelo real esté disponible, solo será necesario actualizar el cliente de integración.
+
+## ⚙️ Configuración del servicio de Data Science
+
+La URL del microservicio del modelo se define mediante variable de entorno:
+
+```
+http://localhost:8080/swagger-ui/index.html
+
+
+
 ```
 
 ## 📌 Estado del proyecto
