@@ -1,0 +1,28 @@
+package com.flightOnTime.flightOnTime.entity;
+
+import com.flightOnTime.flightOnTime.enums.PredictionStatus;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "predictions")
+@Builder
+public class Prediction {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Enumerated(EnumType.STRING)
+    private PredictionStatus prevision;
+    private Double probabilidad;
+    private LocalDateTime fechaPrediccion;
+    @OneToOne(optional = false)
+    @JoinColumn(name = "flight_request_id")
+    private FlightRequest flightRequest;
+
+}
