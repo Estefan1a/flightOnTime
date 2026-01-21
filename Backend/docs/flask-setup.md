@@ -93,7 +93,9 @@ Python 3.x (venv)
 ```
 Si no haces esto, VS Code puede usar el Python global y marcar errores falsos.
 
-## Ejecutar microservicio
+## Ejecutar microservicio 🚀
+
+En la terminal (con venv activo):
 
 ```
 python api.py
@@ -111,11 +113,7 @@ Deberías ver algo como:
 Abre el navegador o Postman/insonmia:
 
 ```
-{
-  "status": "OK",
-  "modelo_cargado": true
-}
-
+http://localhost:5000/health
 ```
 ## Respuesta esperada:
 
@@ -126,7 +124,10 @@ Abre el navegador o Postman/insonmia:
 }
 ```
 ## Probar /predict (ejemplo rápido)
+
+```
 POST http://localhost:5000/predict
+```
 
 Body (JSON):
 ```json

@@ -9,5 +9,4 @@ public class FlightOnTimeApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FlightOnTimeApplication.class, args);
 	}
-
 }
