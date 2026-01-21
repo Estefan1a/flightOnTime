@@ -53,7 +53,7 @@ URL: http://localhost:8080/dashboard
 Entrar a la carpeta del microservicio:
 
 ```
-cd ../../microservice
+cd microservice
 ```
 
 Instalar dependencias de Python (recomendado en un virtualenv):

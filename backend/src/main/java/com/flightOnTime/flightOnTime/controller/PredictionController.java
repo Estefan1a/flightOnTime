@@ -1,12 +1,14 @@
 package com.flightOnTime.flightOnTime.controller;
 
 import com.flightOnTime.flightOnTime.dto.FlightRequestDTO;
+import com.flightOnTime.flightOnTime.dto.PredictionHistoryDTO;
 import com.flightOnTime.flightOnTime.dto.PredictionResponseDTO;
 import com.flightOnTime.flightOnTime.service.PredictionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -32,6 +34,17 @@ public class PredictionController {
                     "detalle", e.getMessage()
             ));
         }
+    }
+
+    // ------------------------------
+    // History
+    // ------------------------------
+    @GetMapping("/history")
+    public List<PredictionHistoryDTO> getHistory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return predictionService.getHistory(page, size);
     }
 
     // ------------------------------

@@ -1,5 +1,9 @@
 # ✈️ FlightOnTime
 
+---
+
+## 📌 Descripción
+
 Proyecto desarrollado en el marco del **Hackatón ONE – No Country 2025**.
 
 FlightOnTime es una solución predictiva que estima la probabilidad de que un vuelo despegue **puntual o con retraso**, a partir de datos históricos y características del vuelo.
@@ -53,8 +57,6 @@ Integración, persistencia, estadísticas y APIs REST
 - Gabriel Romero
 - Juan Gómez Martínez
 - Javier Alberto Chávez Córdova  
-
-
 
 ### Data Science
 Limpieza de datos, entrenamiento y exportación del modelo
@@ -210,7 +212,8 @@ Antes de ejecutar el proyecto, asegúrese de:
   👉 [Configuración del microservicio Flask](backend/docs/flask-setup.md)
 
    El microservicio de Machine Learning se encuentra en:👉 [microservice/](microservice/api.py)
-   Incluye:
+   
+- Incluye:
    - API Flask (`api.py`)
    - Carga del modelo `.joblib`
    - Endpoint `/predict`
@@ -221,31 +224,53 @@ Antes de ejecutar el proyecto, asegúrese de:
 El repositorio está organizado por dominios de responsabilidad, siguiendo una arquitectura de microservicios y separación de capas:
 
 ```
-flightOnTime/Backend Java (Spring Boot)
-│ ├── src/
+flightOnTime/
+│
+├── frontend/
+│ ├── index.html
+│ ├── styles.css
+│ └── script.js
+│
+├── backend/
+│ ├── src/main/java/
+│ ├── docs/
 │ └── pom.xml
 │
-├── microservice/ # Microservicio de predicción (Python + Flask)
+├── microservice/
 │ ├── api.py
-│ ├── requirements.txt
 │ ├── champion_clima.joblib
-│ └── venv/ # (no versionado)
+│ └── requirements.txt
 │
 ├── data/ # Data Science
 │ ├── notebooks/
 │ ├── datasets/
 │ └── models/
-│
-├── frontend/
-│ └── README.md
-│
-├── README.md # Documentación principal
-└── .gitignore
+└── README.md # Documentación principal
 
 ```
 
 📌 **Nota:** algunas carpetas pueden vivir en ramas específicas durante el desarrollo, pero esta es la estructura lógica final del proyecto.
 
+---
+
+## 🌿 Estrategia de ramas (Branching)
+
+### Ramas principales
+
+- **main**  
+  Rama estable del proyecto.
+
+- **backend**  
+  Desarrollo de la API REST.
+
+- **datascience**  
+  Desarrollo del modelo predictivo.
+
+- **frontend**  
+  Desarrollo y visualización del consumo de la API.
+
+- **microservicio**  
+  consumo de la API.
 ---
 
 ### 🔗 Accesos rápidos
@@ -275,14 +300,14 @@ flightOnTime/Backend Java (Spring Boot)
 - **microservice**  
 
 ---
-
-## ▶️ Cómo ejecutar el proyecto (uso local)
+## 🚀 Guía de instalación paso a paso
+### ▶️ Cómo ejecutar el proyecto (uso local)
 - Iniciar MySQL
 - Ejecutar el backend Spring Boot desde IntelliJ
 - Activar entorno virtual y ejecutar api.py
 - Probar endpoints con Insomnia o Postman
 
-👉 [Cómo ejecutar el proyecto](backend/docs/mysql-database-setup.md)
+👉 [Cómo ejecutar el proyecto](backend/docs/como-ejecutar-el-proyecto.md)
 
 
 
