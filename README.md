@@ -187,8 +187,7 @@ Salida:
 
 ---
 ## ☕ Backend Spring Boot
-☕ Backend Spring Boot
-Flujo de predicción
+### Flujo de predicción
 
 - El cliente envía la solicitud
 - Se guarda el vuelo (`FlightRequest`)
@@ -210,6 +209,9 @@ Antes de ejecutar el proyecto, asegúrese de:
 - Tener activo el microservicio Flask
 
   👉 [Configuración del microservicio Flask](backend/docs/flask-setup.md)
+- Variables de entorno configuradas según los archivos de configuración del backend y del microservicio 
+
+  👉 [configuración de las variables de entorno](backend/docs/variables-de-entorno.md)
 
    El microservicio de Machine Learning se encuentra en:👉 [microservice/](microservice/api.py)
    
@@ -241,7 +243,7 @@ flightOnTime/
 │ ├── champion_clima.joblib
 │ └── requirements.txt
 │
-├── data/ # Data Science
+├── datascience/
 │ ├── notebooks/
 │ ├── datasets/
 │ └── models/
@@ -269,56 +271,39 @@ flightOnTime/
 - **frontend**  
   Desarrollo y visualización del consumo de la API.
 
-- **microservicio**  
-  consumo de la API.
 ---
 
 ### 🔗 Accesos rápidos
 
 - 🐍 Microservicio ML (Flask): [`/microservice`](microservice/)
-- 🧠 Data Science: [`/data-science`](datascience)
-- 🎨 Frontend: [`/frontend`](frontend)
+- 🧠 Data Science: [`/data-science`](datascience/)
+- 🎨 Frontend: [`/frontend`](frontend/)
+- ☕ Frontend: [`/backend`](backend/)
 
 ---
 
-## 🌿 Estrategia de ramas (Branching)
-
-### Ramas principales
-
-- **main**  
-  Rama estable del proyecto.
-
-- **backend**  
-  Desarrollo de la API REST.
-
-- **datascience**  
-  Desarrollo del modelo predictivo.
-
-- **frontend**  
-    Desarrollo y visualización del consumo de la API.
-
-- **microservice**  
-
----
 ## 🚀 Guía de instalación paso a paso
+
 ### ▶️ Cómo ejecutar el proyecto (uso local)
 - Iniciar MySQL
 - Ejecutar el backend Spring Boot desde IntelliJ
 - Activar entorno virtual y ejecutar api.py
 - Probar endpoints con Insomnia o Postman
 
-👉 [Cómo ejecutar el proyecto](backend/docs/como-ejecutar-el-proyecto.md)
-
+👉 Instrucciones completas para ejecutar el proyecto:
+[Cómo ejecutar el proyecto](backend/docs/como-ejecutar-el-proyecto.md)
 
 
 ## ⚙️ Configuración del microservicio
 
-La URL del microservicio del modelo se define mediante variable de entorno:
+El backend Spring Boot se comunica con el microservicio de Machine Learning
+mediante una URL configurable por variable de entorno.
 
 ```
-http://localhost:5000
-
+ORACLE_PREDICTION_URL = http://127.0.0.1:5000/predict
 ```
+
+instrucciones para  [Configuración del microservicio Flask](backend/docs/flask-setup.md)
 
 ## 📌 Estado del proyecto
 
