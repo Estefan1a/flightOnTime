@@ -35,3 +35,10 @@ build/
 ### Environment variables
 .env
 
+# Maven / Backend Java
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
