@@ -83,7 +83,7 @@ class OraclePredictionClientTest {
         );
 
         PredictionResponseDTO oracleResponse =
-                new PredictionResponseDTO("RETRASADO", 0.85);
+                new PredictionResponseDTO("RETRASADO", 0.85,null);
 
         when(restTemplate.postForObject(
                 anyString(),
