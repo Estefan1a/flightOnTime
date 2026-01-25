@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+import os
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
@@ -7,6 +10,7 @@ from functools import lru_cache
 import json
 import hashlib
 
+load_dotenv(dotenv_path=".env")
 # =========================================================
 #                       CONFIG APP
 # =========================================================
@@ -16,7 +20,11 @@ CORS(app)
 # =========================================================
 #                        LOAD MODEL
 # =========================================================
-MODEL_PATH = r"C:\Users\Estefany\Documents\ONE\HACKATON ONE NO COUNTRY 2025\flightOnTime\microservice\champion_clima.joblib"
+MODEL_PATH = os.getenv("MODEL_PATH")
+FLASK_PORT = os.getenv("FLASK_PORT", 5000)
+
+if not MODEL_PATH:
+    raise ValueError("❌ La variable de entorno MODEL_PATH no está definida")
 
 try:
     modelo = joblib.load(MODEL_PATH)
@@ -179,6 +187,6 @@ def predict():
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        port=5000,
+        port=FLASK_PORT,
         debug=True
     )
