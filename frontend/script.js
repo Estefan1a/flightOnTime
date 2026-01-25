@@ -1,5 +1,6 @@
 
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = window.APP_CONFIG.API_BASE_URL;
+console.log("Conectando al backend en:", API_BASE_URL);
 
 // Estado
 let currentTab = 'dashboard';
@@ -243,7 +244,7 @@ async function handleSubmit(e) {
     e.preventDefault();
     
     const formData = {
-        aerolinea: document.getElementById('aerolinea').value.trim(),
+        aerolinea: document.getElementById('aerolinea').value.trim().toUpperCase(),
         origen: document.getElementById('origen').value.trim().toUpperCase(),
         destino: document.getElementById('destino').value.trim().toUpperCase(),
         fechaPartida: document.getElementById('fechaPartida').value,
@@ -267,19 +268,21 @@ function validateForm(data) {
     
     if (!data.aerolinea) {
         errors.aerolinea = 'La aerolínea es obligatoria';
-    }
+    } else if (!/^[A-Za-z]{2}$/.test(data.aerolinea)) {
+    errors.aerolinea = 'Debe ser un código de 2 letras (ej. AA, AM)';
+}
     
     if (!data.origen) {
         errors.origen = 'El aeropuerto de origen es obligatorio';
-    } else if (data.origen.length > 3) {
-        errors.origen = 'El código no puede superar los 3 caracteres';
-    }
+    } else if (!/^[A-Z]{3}$/.test(data.origen)) {
+    errors.origen = 'Debe ser un código IATA de 3 letras (ej. MEX)';
+}
     
     if (!data.destino) {
         errors.destino = 'El aeropuerto de destino es obligatorio';
-    } else if (data.destino.length > 3) {
-        errors.destino = 'El código no puede superar los 3 caracteres';
-    }
+    } else if (!/^[A-Z]{3}$/.test(data.destino)) {
+    errors.destino = 'Debe ser un código IATA de 3 letras (ej. JFK)';
+}
     
     if (!data.fechaPartida) {
         errors.fechaPartida = 'La fecha de partida es obligatoria';
@@ -293,9 +296,9 @@ function validateForm(data) {
     
     if (!data.distanciaKm) {
         errors.distanciaKm = 'La distancia es obligatoria';
-    } else if (parseInt(data.distanciaKm) <= 0) {
-        errors.distanciaKm = 'La distancia debe ser mayor a cero';
-    }
+    } else if (parseInt(data.distanciaKm) <= 0 || parseInt(data.distanciaKm) > 20000) {
+    errors.distanciaKm = 'La distancia debe ser válida';
+}
     
     return errors;
 }
@@ -348,6 +351,14 @@ async function submitPrediction(formData) {
     // Ocultar resultado anterior
     const resultDiv = document.getElementById('prediction-result');
     resultDiv.classList.remove('show');
+
+    const payload = {
+        ...formData,
+        distanciaKm: parseInt(formData.distanciaKm)
+    };
+
+    //LOG 
+    console.log("[FRONTEND] Enviando solicitud de predicción", payload);
     
     try {
         const response = await fetch(`${API_BASE_URL}/predict`, {
@@ -355,11 +366,11 @@ async function submitPrediction(formData) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                ...formData,
-                distanciaKm: parseInt(formData.distanciaKm)
-            })
+            body: JSON.stringify(payload)
+            
         });
+
+        console.log("[FRONTEND] Respuesta recibida del backend", response.status);
         
         // Error de validación (400)
         if (response.status === 400) {

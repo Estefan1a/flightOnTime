@@ -9,11 +9,19 @@ from datetime import datetime
 from functools import lru_cache
 import json
 import hashlib
+import logging
 
 load_dotenv(dotenv_path=".env")
 # =========================================================
 #                       CONFIG APP
 # =========================================================
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [FLASK] %(levelname)s - %(message)s"
+)
+
+logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app)
 
@@ -138,53 +146,79 @@ def health():
 
 @app.route("/predict", methods=["POST"])
 def predict():
+   
+    logger.info("[PREDICT] Petición recibida desde backend")
+
     if modelo is None:
+        logger.error("❌ Modelo no cargado")
         return jsonify({"error": "Modelo no cargado"}), 500
 
     try:
         raw = request.get_json()
+        logger.info(f"Payload recibido: {raw}")
 
         if not raw:
+            logger.warning("Body vacío")
             return jsonify({"error": "Body vacío"}), 400
 
+        # Transformación desde request Java
         model_data = (
             transformar_request_java(raw)
             if "fechaPartida" in raw
             else raw
         )
 
-        # Validate contract
+        logger.info("Datos transformados para el modelo")
+
+        # Validar contrato del modelo
         missing = set(ALL_FEATURES) - set(model_data.keys())
         if missing:
+            logger.error(f"❌ Faltan columnas requeridas: {missing}")
             return jsonify({
                 "error": f"Faltan columnas: {list(missing)}"
             }), 400
 
+        # Ejecutar predicción
         data_json = json.dumps(model_data, sort_keys=True)
+        logger.info("Ejecutando predicción con modelo ML")
+
         pred, p0, p1 = ejecutar_prediccion(data_json)
 
         estado = "PUNTUAL" if pred == 0 else "RETRASADO"
         prob = p0 if pred == 0 else p1
 
-        return jsonify({
+        logger.info(
+            f"Predicción generada → estado={estado}, probabilidad={round(prob,4)}"
+        )
+
+        # Respuesta al backend
+        response = {
             "prevision": estado,
             "probabilidad": round(prob, 4),
             "detalle": {
                 "prob_a_tiempo": round(p0, 4),
                 "prob_retraso": round(p1, 4)
             }
-        }), 200
+        }
+
+        logger.info("Respuesta enviada al backend Spring Boot")
+
+        return jsonify(response), 200
 
     except Exception as e:
+        logger.exception("Error inesperado en predicción")
         return jsonify({
             "error": f"Error interno: {str(e)}"
         }), 500
-
 
 # =========================================================
 #                            RUN
 # =========================================================
 if __name__ == "__main__":
+    print(f"🚀 Backend corriendo en:")
+    print(f"   http://127.0.0.1:{FLASK_PORT}")
+    print(f"   Endpoint predict: http://127.0.0.1:{FLASK_PORT}/predict")
+
     app.run(
         host="0.0.0.0",
         port=FLASK_PORT,

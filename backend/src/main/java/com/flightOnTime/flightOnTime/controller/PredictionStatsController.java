@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/stats")
 @RequiredArgsConstructor
-@CrossOrigin("http://127.0.0.1:5500")
+@CrossOrigin("${frontend.url}")
 public class PredictionStatsController {
     private final PredictionStatsService statsService;
 

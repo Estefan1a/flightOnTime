@@ -23,6 +23,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 @Service
 @RequiredArgsConstructor
@@ -33,14 +36,21 @@ public class PredictionService {
     private final FlightMapper flightMapper;
     private final OraclePredictionClient oracleClient;
     private final WeatherService weatherService;
+    private static final Logger log =
+            LoggerFactory.getLogger(PredictionService.class);
+
 
     // ------------------------------
     // Predicción de un vuelo
     // ------------------------------
     public PredictionResponseDTO predict(FlightRequestDTO request) {
 
+        log.info("[SERVICE] Iniciando flujo de predicción para vuelo {} → {}",
+                request.origen(), request.destino());
+
         // 1️⃣ Persistimos el vuelo
         FlightRequest flight = flightRepo.save(flightMapper.toEntity(request));
+        log.info("[SERVICE] FlightRequest guardado con ID={}", flight.getId());
 
         // 2️⃣ Obtenemos info de clima usando solo la fecha (sin hora)
         LocalDate fecha = request.fechaPartida().toLocalDate();
@@ -49,14 +59,23 @@ public class PredictionService {
                 fecha
         );
 
+        log.info("[SERVICE] Clima obtenido: temp={}°C, viento={} km/h",
+                weather.temperatura(),
+                weather.viento()
+        );
+
         // 3️⃣ Consultamos el oráculo Flask
+        log.info("[SERVICE] Enviando datos al microservicio Flask");
         Map<String, Object> oracleResult = oracleClient.predict(request);
 
-        // 4️⃣ Guardamos predicción
         String estado = (String) oracleResult.get("prevision");
         Double probabilidad = ((Number) oracleResult.get("probabilidad")).doubleValue();
 
-        // Mapear respuesta del microservicio a tu enum
+        log.info("[SERVICE] Respuesta del microservicio: estado={}, probabilidad={}",
+                estado, probabilidad
+        );
+
+        // 4️⃣ Guardamos predicción
         PredictionStatus statusEnum;
         switch (estado.toUpperCase()) {
             case "A TIEMPO":
@@ -78,6 +97,8 @@ public class PredictionService {
                         .fechaPrediccion(LocalDateTime.now())
                         .build()
         );
+
+        log.info("[SERVICE] Predicción guardada correctamente en base de datos");
 
         // 5️⃣ Devolvemos respuesta
         return new PredictionResponseDTO(

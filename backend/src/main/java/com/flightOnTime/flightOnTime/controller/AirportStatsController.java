@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/stats/airports")
 @RequiredArgsConstructor
-@CrossOrigin("http://127.0.0.1:5500")
+@CrossOrigin("${frontend.url}")
 public class AirportStatsController {
     private final AirportStatsService airportStatsService;
 

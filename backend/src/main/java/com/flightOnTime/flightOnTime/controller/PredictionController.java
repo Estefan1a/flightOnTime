@@ -11,13 +11,21 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 @RestController
 @RequestMapping("/predict")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://127.0.0.1:5500") //front
+@CrossOrigin(origins = "${frontend.url}") //front
 public class PredictionController {
 
     private final PredictionService predictionService;
+
+    private static final Logger log =
+            LoggerFactory.getLogger(PredictionController.class);
+
 
     // ------------------------------
     // Endpoint POST /predict
@@ -25,10 +33,25 @@ public class PredictionController {
     @PostMapping
     public ResponseEntity<?> predict(@RequestBody FlightRequestDTO request) {
         try {
+            log.info("[BACKEND - Controller] Request recibido: aerolinea={}, origen={}, destino={}, fecha={}, distancia={}",
+                    request.aerolinea(),
+                    request.origen(),
+                    request.destino(),
+                    request.fechaPartida(),
+                    request.distanciaKm()
+            );
+
             PredictionResponseDTO response = predictionService.predict(request);
+
+            log.info("[BACKEND - Controller] Respuesta enviada: prevision={}, probabilidad={}",
+                    response.prevision(),
+                    response.probabilidad()
+            );
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            // Manejo de errores simple
+
+            log.error("[BACKEND - Controller] Error al procesar predicción", e);
             return ResponseEntity.status(500).body(Map.of(
                     "error", "No se pudo obtener predicción",
                     "detalle", e.getMessage()
