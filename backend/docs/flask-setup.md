@@ -107,6 +107,11 @@ Deberías ver algo como:
 * Running on http://127.0.0.1:5000
 ```
 ---
+## El microservicio quedará disponible en:
+```
+http://localhost:5000/predict
+```
+---
 
 ## Probar el endpoint /health
 
